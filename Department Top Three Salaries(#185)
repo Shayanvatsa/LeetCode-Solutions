@@ -1,0 +1,12 @@
+WITH TopSalaries AS (
+    SELECT departmentId, salary,
+           DENSE_RANK() OVER (PARTITION BY departmentId ORDER BY salary DESC) AS salary_rank
+    FROM Employee
+)
+SELECT d.name AS Department, e.name AS Employee, e.salary AS Salary
+FROM Employee e
+JOIN TopSalaries ts ON e.departmentId = ts.departmentId AND e.salary = ts.salary
+JOIN Department d ON e.departmentId = d.id
+WHERE ts.salary_rank <= 3
+GROUP BY d.name, e.name, e.salary
+ORDER BY d.name, e.salary DESC;
